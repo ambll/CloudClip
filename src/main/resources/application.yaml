@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: cloudclip
+  datasource:
+    url: jdbc:postgresql://localhost:5432/cloudclip
+    username: cloudclip
+    password: erfjui
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+
+  flyway:
+    enabled: true
+
+file-storage:
+  path: ./storage/files
