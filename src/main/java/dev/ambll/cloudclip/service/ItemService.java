@@ -37,6 +37,9 @@ public class ItemService {
                 .orElseThrow(() ->
                         new RuntimeException("Room not found")
                 );
+        if(room.getExpiresAt() != null && LocalDateTime.now().isAfter(room.getExpiresAt())) {
+            throw new RuntimeException("Room is expired");
+        }
 
         Item item = new Item();
         item.setRoom(room);
@@ -62,6 +65,10 @@ public class ItemService {
                 .orElseThrow(() ->
                         new RuntimeException("Room not found")
                 );
+        if(room.getExpiresAt() != null && LocalDateTime.now().isAfter(room.getExpiresAt())) {
+            throw new RuntimeException("Room is expired");
+        }
+        
         String filePath = fileStorageService.save(request.getFile());
 
         Item item = new Item();
@@ -85,6 +92,9 @@ public class ItemService {
                 .orElseThrow(() ->
                         new RuntimeException("Room not found")
                 );
+        if(room.getExpiresAt() != null && LocalDateTime.now().isAfter(room.getExpiresAt())) {
+            throw new RuntimeException("Room is expired");
+        }
 
         return itemRepository
                 .findByRoomOrderByCreatedAtDesc(room)
@@ -99,6 +109,10 @@ public class ItemService {
                 .orElseThrow(() ->
                         new RuntimeException("Room not found")
                 );
+        if(room.getExpiresAt() != null && LocalDateTime.now().isAfter(room.getExpiresAt())) {
+            throw new RuntimeException("Room is expired");
+        }
+
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() ->
                         new RuntimeException("Item not found")
@@ -130,6 +144,10 @@ public class ItemService {
                 .orElseThrow(() ->
                         new RuntimeException("Room not found")
                 );
+        if(room.getExpiresAt() != null && LocalDateTime.now().isAfter(room.getExpiresAt())) {
+            throw new RuntimeException("Room is expired");
+        }
+
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() ->
                         new RuntimeException("Item not found")

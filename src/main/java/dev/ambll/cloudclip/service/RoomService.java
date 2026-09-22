@@ -112,6 +112,10 @@ public class RoomService {
                         new RuntimeException("Room not found")
                 );
 
+        if(room.getExpiresAt() != null && LocalDateTime.now().isAfter(room.getExpiresAt())) {
+            throw new RuntimeException("Room is expired");
+        }
+
         if(room.getPasswordHash() == null) {
             return;
         }
