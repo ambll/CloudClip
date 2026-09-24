@@ -1,4 +1,7 @@
 package dev.ambll.cloudclip.exception;
 
-public class RoomNotFoundException {
+public class RoomNotFoundException extends RuntimeException {
+    public RoomNotFoundException() {
+        super("Room not found");
+    }
 }

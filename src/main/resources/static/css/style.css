@@ -2,9 +2,37 @@ body {
     font-family: sans-serif;
     max-width: 900px;
     margin: 40px auto;
+    padding: 0 20px;
+    background: #f5f5f5;
 }
 
-button {
-    padding: 10px 20px;
-    cursor: pointer;
+#rooms {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.room-card {
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.room-card h2 {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.room-card p {
+    margin: 6px 0;
+    color: #666;
+}
+
+.room-card a {
+    display: inline-block;
+    margin-top: 12px;
+    text-decoration: none;
+    font-weight: bold;
 }

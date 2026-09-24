@@ -13,10 +13,29 @@ button.addEventListener("click", async function () {
 
     rooms.forEach(function (room) {
 
-        const element = document.createElement("div");
+        const card = document.createElement("div");
+        card.classList.add("room-card");
 
-        element.textContent = room.name;
+        const name = document.createElement("h2");
+        name.textContent = room.name;
 
-        roomsContainer.appendChild(element);
+        const visibility = document.createElement("p");
+        visibility.textContent = room.visibility === "PUBLIC"
+            ? "Публичная комната"
+            : "Приватная комната";
+
+        const createdAt = document.createElement("p");
+        createdAt.textContent = `Создана: ${room.createdAt}`;
+
+        const link = document.createElement("a");
+        link.textContent = "Открыть →";
+        link.href = `/room/${room.roomKey}`;
+
+        card.appendChild(name);
+        card.appendChild(visibility);
+        card.appendChild(createdAt);
+        card.appendChild(link);
+
+        roomsContainer.appendChild(card);
     });
 });
