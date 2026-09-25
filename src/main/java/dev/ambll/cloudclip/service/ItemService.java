@@ -7,6 +7,7 @@ import dev.ambll.cloudclip.dto.response.ItemResponse;
 import dev.ambll.cloudclip.entity.Item;
 import dev.ambll.cloudclip.entity.Room;
 import dev.ambll.cloudclip.enums.ItemType;
+import dev.ambll.cloudclip.exception.*;
 import dev.ambll.cloudclip.repository.ItemRepository;
 import dev.ambll.cloudclip.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,11 +35,10 @@ public class ItemService {
             CreateTextItemRequest request
     ) {
         Room room = roomRepository.findByRoomKey(roomKey)
-                .orElseThrow(() ->
-                        new RuntimeException("Room not found")
-                );
-        if(room.getExpiresAt() != null && LocalDateTime.now().isAfter(room.getExpiresAt())) {
-            throw new RuntimeException("Room is expired");
+                .orElseThrow(RoomNotFoundException::new);
+
+        if(room.getExpiresAt() != null && !LocalDateTime.now().isBefore(room.getExpiresAt())) {
+            throw new RoomExpiredException();
         }
 
         Item item = new Item();
@@ -62,11 +62,10 @@ public class ItemService {
             CreateFileItemRequest request
     ) {
         Room room = roomRepository.findByRoomKey(roomKey)
-                .orElseThrow(() ->
-                        new RuntimeException("Room not found")
-                );
-        if(room.getExpiresAt() != null && LocalDateTime.now().isAfter(room.getExpiresAt())) {
-            throw new RuntimeException("Room is expired");
+                .orElseThrow(RoomNotFoundException::new);
+
+        if(room.getExpiresAt() != null && !LocalDateTime.now().isBefore(room.getExpiresAt())) {
+            throw new RoomExpiredException();
         }
         
         String filePath = fileStorageService.save(request.getFile());
@@ -89,11 +88,10 @@ public class ItemService {
 
     public List<ItemResponse> getItems(String roomKey) {
         Room room = roomRepository.findByRoomKey(roomKey)
-                .orElseThrow(() ->
-                        new RuntimeException("Room not found")
-                );
-        if(room.getExpiresAt() != null && LocalDateTime.now().isAfter(room.getExpiresAt())) {
-            throw new RuntimeException("Room is expired");
+                .orElseThrow(RoomNotFoundException::new);
+
+        if(room.getExpiresAt() != null && !LocalDateTime.now().isBefore(room.getExpiresAt())) {
+            throw new RoomExpiredException();
         }
 
         return itemRepository
@@ -106,24 +104,21 @@ public class ItemService {
 
     public FileDownload getFile(String roomKey, Long itemId) {
         Room room = roomRepository.findByRoomKey(roomKey)
-                .orElseThrow(() ->
-                        new RuntimeException("Room not found")
-                );
-        if(room.getExpiresAt() != null && LocalDateTime.now().isAfter(room.getExpiresAt())) {
-            throw new RuntimeException("Room is expired");
+                .orElseThrow(RoomNotFoundException::new);
+
+        if(room.getExpiresAt() != null && !LocalDateTime.now().isBefore(room.getExpiresAt())) {
+            throw new RoomExpiredException();
         }
 
         Item item = itemRepository.findById(itemId)
-                .orElseThrow(() ->
-                        new RuntimeException("Item not found")
-                );
+                .orElseThrow(ItemNotFoundException::new);
 
         if (!Objects.equals(item.getRoom().getId(), room.getId())) {
-            throw new RuntimeException("Item does not belong to this room");
+            throw new ItemNotBelongToRoomException();
         }
 
         if (item.getType() != ItemType.FILE) {
-            throw new RuntimeException("Item is not a file");
+            throw new ItemNotFileException();
         }
 
         Resource file = fileStorageService.load(item.getFilePath());
@@ -141,20 +136,17 @@ public class ItemService {
 
     public void deleteItem(String roomKey, Long itemId) throws IOException {
         Room room = roomRepository.findByRoomKey(roomKey)
-                .orElseThrow(() ->
-                        new RuntimeException("Room not found")
-                );
-        if(room.getExpiresAt() != null && LocalDateTime.now().isAfter(room.getExpiresAt())) {
-            throw new RuntimeException("Room is expired");
+                .orElseThrow(RoomNotFoundException::new);
+
+        if(room.getExpiresAt() != null && !LocalDateTime.now().isBefore(room.getExpiresAt())) {
+            throw new RoomExpiredException();
         }
 
         Item item = itemRepository.findById(itemId)
-                .orElseThrow(() ->
-                        new RuntimeException("Item not found")
-                );
+                .orElseThrow(ItemNotFoundException::new);
 
         if (!Objects.equals(item.getRoom().getId(), room.getId())) {
-            throw new RuntimeException("Item does not belong to this room");
+            throw new ItemNotBelongToRoomException();
         }
 
         if(item.getType() == ItemType.FILE) {

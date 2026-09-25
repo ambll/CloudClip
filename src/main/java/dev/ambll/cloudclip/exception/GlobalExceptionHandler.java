@@ -34,4 +34,18 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.NOT_FOUND)
                 .body(e.getMessage());
     }
+
+    @ExceptionHandler(ItemNotBelongToRoomException.class)
+    public ResponseEntity<String> handleItemNotBelongToRoom(ItemNotBelongToRoomException e) {
+        return ResponseEntity
+                .status(HttpStatus.GONE) // Какой статус отдать тут?
+                .body(e.getMessage());
+    }
+
+    @ExceptionHandler(ItemNotFileException.class)
+    public ResponseEntity<String> handleItemNotFile(ItemNotFileException e) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND) // И тут?
+                .body(e.getMessage());
+    }
 }

@@ -8,6 +8,9 @@ import dev.ambll.cloudclip.entity.Room;
 import dev.ambll.cloudclip.enums.ItemType;
 import dev.ambll.cloudclip.enums.Visibility;
 import dev.ambll.cloudclip.exception.InvalidRoomPasswordException;
+import dev.ambll.cloudclip.exception.ItemNotFoundException;
+import dev.ambll.cloudclip.exception.RoomExpiredException;
+import dev.ambll.cloudclip.exception.RoomNotFoundException;
 import dev.ambll.cloudclip.repository.ItemRepository;
 import dev.ambll.cloudclip.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
@@ -55,9 +58,7 @@ public class RoomService {
 
     public void deleteRoom(String roomKey) {
         Room room = roomRepository.findByRoomKey(roomKey)
-                .orElseThrow(() ->
-                        new RuntimeException("Room not found")
-                );
+                .orElseThrow(RoomNotFoundException::new);
 
         List<Item> items = itemRepository.findByRoomAndType(room, ItemType.FILE);
         for (Item item : items) {
@@ -73,12 +74,10 @@ public class RoomService {
 
     public RoomResponse getRoom(String roomKey) {
         Room room = roomRepository.findByRoomKey(roomKey)
-                .orElseThrow(() ->
-                        new RuntimeException("Room not found")
-                );
+                .orElseThrow(RoomNotFoundException::new);
 
-        if(room.getExpiresAt() != null && LocalDateTime.now().isAfter(room.getExpiresAt())) {
-            throw new RuntimeException("Room is expired");
+        if(room.getExpiresAt() != null && !LocalDateTime.now().isBefore(room.getExpiresAt())) {
+            throw new RoomExpiredException();
         }
 
         return toRoomResponse(room);
@@ -108,12 +107,10 @@ public class RoomService {
 
     public void accessRoom(String roomKey, RoomAccessRequest request) {
         Room room = roomRepository.findByRoomKey(roomKey)
-                .orElseThrow(() ->
-                        new RuntimeException("Room not found")
-                );
+                .orElseThrow(RoomNotFoundException::new);
 
-        if(room.getExpiresAt() != null && LocalDateTime.now().isAfter(room.getExpiresAt())) {
-            throw new RuntimeException("Room is expired");
+        if(room.getExpiresAt() != null && !LocalDateTime.now().isBefore(room.getExpiresAt())) {
+            throw new RoomExpiredException();
         }
 
         if(room.getPasswordHash() == null) {
@@ -126,6 +123,17 @@ public class RoomService {
         )) {
             throw new InvalidRoomPasswordException();
         }
+    }
+
+    public Room getActiveRoom(String roomKey) {
+        Room room = roomRepository.findByRoomKey(roomKey)
+                .orElseThrow(RoomNotFoundException::new);
+
+        if(room.getExpiresAt() != null && !LocalDateTime.now().isBefore(room.getExpiresAt())) {
+            throw new RoomExpiredException();
+        }
+
+        return room;
     }
 
     private String generateRoomKey() {
