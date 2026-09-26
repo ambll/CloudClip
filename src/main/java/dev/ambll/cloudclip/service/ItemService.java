@@ -27,6 +27,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class ItemService {
     private final ItemRepository itemRepository;
+    private final RoomService roomService;
     private final RoomRepository roomRepository;
     private final FileStorageService fileStorageService;
 
@@ -34,12 +35,7 @@ public class ItemService {
             String roomKey,
             CreateTextItemRequest request
     ) {
-        Room room = roomRepository.findByRoomKey(roomKey)
-                .orElseThrow(RoomNotFoundException::new);
-
-        if(room.getExpiresAt() != null && !LocalDateTime.now().isBefore(room.getExpiresAt())) {
-            throw new RoomExpiredException();
-        }
+        Room room = roomService.getActiveRoom(roomKey);
 
         Item item = new Item();
         item.setRoom(room);
@@ -61,12 +57,7 @@ public class ItemService {
             String roomKey,
             CreateFileItemRequest request
     ) {
-        Room room = roomRepository.findByRoomKey(roomKey)
-                .orElseThrow(RoomNotFoundException::new);
-
-        if(room.getExpiresAt() != null && !LocalDateTime.now().isBefore(room.getExpiresAt())) {
-            throw new RoomExpiredException();
-        }
+        Room room = roomService.getActiveRoom(roomKey);
         
         String filePath = fileStorageService.save(request.getFile());
 
@@ -87,12 +78,7 @@ public class ItemService {
     }
 
     public List<ItemResponse> getItems(String roomKey) {
-        Room room = roomRepository.findByRoomKey(roomKey)
-                .orElseThrow(RoomNotFoundException::new);
-
-        if(room.getExpiresAt() != null && !LocalDateTime.now().isBefore(room.getExpiresAt())) {
-            throw new RoomExpiredException();
-        }
+        Room room = roomService.getActiveRoom(roomKey);
 
         return itemRepository
                 .findByRoomOrderByCreatedAtDesc(room)
@@ -103,12 +89,7 @@ public class ItemService {
     }
 
     public FileDownload getFile(String roomKey, Long itemId) {
-        Room room = roomRepository.findByRoomKey(roomKey)
-                .orElseThrow(RoomNotFoundException::new);
-
-        if(room.getExpiresAt() != null && !LocalDateTime.now().isBefore(room.getExpiresAt())) {
-            throw new RoomExpiredException();
-        }
+        Room room = roomService.getActiveRoom(roomKey);
 
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(ItemNotFoundException::new);
@@ -135,12 +116,7 @@ public class ItemService {
     }
 
     public void deleteItem(String roomKey, Long itemId) throws IOException {
-        Room room = roomRepository.findByRoomKey(roomKey)
-                .orElseThrow(RoomNotFoundException::new);
-
-        if(room.getExpiresAt() != null && !LocalDateTime.now().isBefore(room.getExpiresAt())) {
-            throw new RoomExpiredException();
-        }
+        Room room = roomService.getActiveRoom(roomKey);
 
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(ItemNotFoundException::new);

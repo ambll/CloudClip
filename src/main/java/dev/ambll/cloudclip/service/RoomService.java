@@ -73,12 +73,7 @@ public class RoomService {
     }
 
     public RoomResponse getRoom(String roomKey) {
-        Room room = roomRepository.findByRoomKey(roomKey)
-                .orElseThrow(RoomNotFoundException::new);
-
-        if(room.getExpiresAt() != null && !LocalDateTime.now().isBefore(room.getExpiresAt())) {
-            throw new RoomExpiredException();
-        }
+        Room room = getActiveRoom(roomKey);
 
         return toRoomResponse(room);
     }
@@ -106,12 +101,7 @@ public class RoomService {
     }
 
     public void accessRoom(String roomKey, RoomAccessRequest request) {
-        Room room = roomRepository.findByRoomKey(roomKey)
-                .orElseThrow(RoomNotFoundException::new);
-
-        if(room.getExpiresAt() != null && !LocalDateTime.now().isBefore(room.getExpiresAt())) {
-            throw new RoomExpiredException();
-        }
+        Room room = getActiveRoom(roomKey);
 
         if(room.getPasswordHash() == null) {
             return;
@@ -125,7 +115,7 @@ public class RoomService {
         }
     }
 
-    public Room getActiveRoom(String roomKey) {
+    Room getActiveRoom(String roomKey) {
         Room room = roomRepository.findByRoomKey(roomKey)
                 .orElseThrow(RoomNotFoundException::new);
 
