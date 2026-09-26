@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Создание комнаты — CloudClip</title>
+
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+<h1>Создать комнату</h1>
+
+<form id="createRoomForm">
+
+    <label>
+        Название комнаты
+        <input
+                type="text"
+                id="name"
+                name="name"
+                required
+        >
+    </label>
+
+    <label>
+        Пароль
+        <input
+                type="password"
+                id="password"
+                name="password"
+        >
+    </label>
+
+    <label>
+        Видимость
+        <select id="visibility" name="visibility">
+            <option value="PUBLIC">Публичная</option>
+            <option value="PRIVATE">Приватная</option>
+        </select>
+    </label>
+
+    <label>
+        Срок действия
+        <input
+                type="datetime-local"
+                id="expiresAt"
+                name="expiresAt"
+        >
+    </label>
+
+    <button type="submit">
+        Создать комнату
+    </button>
+
+</form>
+
+<p id="errorMessage"></p>
+
+<script src="/js/create-room.js"></script>
+
+</body>
+</html>

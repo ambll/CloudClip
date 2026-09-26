@@ -38,14 +38,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ItemNotBelongToRoomException.class)
     public ResponseEntity<String> handleItemNotBelongToRoom(ItemNotBelongToRoomException e) {
         return ResponseEntity
-                .status(HttpStatus.GONE) // Какой статус отдать тут?
+                .status(HttpStatus.NOT_FOUND)
                 .body(e.getMessage());
     }
 
     @ExceptionHandler(ItemNotFileException.class)
     public ResponseEntity<String> handleItemNotFile(ItemNotFileException e) {
         return ResponseEntity
-                .status(HttpStatus.NOT_FOUND) // И тут?
+                .status(HttpStatus.BAD_REQUEST)
                 .body(e.getMessage());
     }
 }

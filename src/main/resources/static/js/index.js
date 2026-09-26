@@ -1,8 +1,6 @@
-const button = document.getElementById("loadRoomsButton");
 const roomsContainer = document.getElementById("rooms");
 
-button.addEventListener("click", async function () {
-
+async function loadRooms() {
     const response = await fetch("/rooms");
 
     const rooms = await response.json();
@@ -29,7 +27,7 @@ button.addEventListener("click", async function () {
 
         const link = document.createElement("a");
         link.textContent = "Открыть →";
-        link.href = `/room/${room.roomKey}`;
+        link.href = `/room.html?roomKey=${room.roomKey}`;
 
         card.appendChild(name);
         card.appendChild(visibility);
@@ -38,4 +36,6 @@ button.addEventListener("click", async function () {
 
         roomsContainer.appendChild(card);
     });
-});
+}
+
+loadRooms();

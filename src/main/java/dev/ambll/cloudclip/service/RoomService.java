@@ -115,7 +115,7 @@ public class RoomService {
         }
     }
 
-    Room getActiveRoom(String roomKey) {
+    public Room getActiveRoom(String roomKey) {
         Room room = roomRepository.findByRoomKey(roomKey)
                 .orElseThrow(RoomNotFoundException::new);
 

@@ -6,11 +6,33 @@ body {
     background: #f5f5f5;
 }
 
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header h1 {
+    margin: 0;
+}
+
+.create-room-button {
+    padding: 10px 16px;
+    border-radius: 8px;
+    background: #222;
+    color: white;
+    text-decoration: none;
+}
+
+.create-room-button:hover {
+    background: #444;
+}
+
 #rooms {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    margin-top: 20px;
+    margin-top: 30px;
 }
 
 .room-card {
