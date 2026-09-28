@@ -58,3 +58,32 @@ header h1 {
     text-decoration: none;
     font-weight: bold;
 }
+
+.item-card {
+    padding: 16px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background: white;
+    overflow-wrap: anywhere;
+}
+
+#createItem {
+    margin-top: 30px;
+}
+
+#textInput {
+    display: block;
+    width: 100%;
+    min-height: 100px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    resize: vertical;
+}
+
+.item-card {
+    margin-top: 16px;
+    padding: 16px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background: white;
+}

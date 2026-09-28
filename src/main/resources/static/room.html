@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Комната — CloudClip</title>
+
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+<header>
+    <h1 id="roomName">Комната</h1>
+
+    <a href="/" class="back-button">
+        ← К комнатам
+    </a>
+</header>
+<main>
+    <div id="errorMessage" style="display: none;"></div>
+
+    <div id="roomContent">
+        <section id="roomInfo">
+            <p id="roomVisibility"></p>
+            <p id="roomExpiration"></p>
+        </section>
+
+        <section id="createItem">
+            <h2>Добавить текст</h2>
+            <textarea
+                    id="textInput"
+                    placeholder="Введите текст..."
+            ></textarea>
+            <button id="addTextButton">
+                Добавить
+            </button>
+        </section>
+
+        <section id="createFileItem">
+            <h2>Добавить файл</h2>
+            <input type="file" id="fileInput">
+            <button id="addFileButton">
+                Загрузить
+            </button>
+        </section>
+
+        <section>
+            <h2>Содержимое</h2>
+            <div id="items"></div>
+        </section>
+    </div>
+</main></main>
+
+<script src="/js/room.js"></script>
+
+</body>
+</html>

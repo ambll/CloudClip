@@ -26,18 +26,18 @@ public class RoomController {
         return roomService.createRoom(request);
     }
 
-    @GetMapping("room/{roomKey}")
+    @GetMapping("/rooms/{roomKey}")
     public RoomResponse getRoomByKey(@PathVariable String roomKey) {
         return roomService.getRoom(roomKey);
     }
 
-    @DeleteMapping("room/{roomKey}")
+    @DeleteMapping("/rooms/{roomKey}")
     public ResponseEntity<Void> deleteRoom(@PathVariable String roomKey) {
         roomService.deleteRoom(roomKey);
-        return ResponseEntity.noContent().build(); // Возвращает статус 204 No Content
+        return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("room/{roomKey}/access")
+    @PostMapping("/rooms/{roomKey}/access")
     public void accessRoom(@PathVariable String roomKey, @RequestBody RoomAccessRequest request) {
         roomService.accessRoom(roomKey, request);
     }

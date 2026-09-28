@@ -21,28 +21,28 @@ import java.util.List;
 public class ItemController {
     private final ItemService itemService;
 
-    @PostMapping(value = "/room/{roomKey}/item/text", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/rooms/{roomKey}/items/text", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ItemResponse createTextItem(@PathVariable String roomKey, @RequestBody CreateTextItemRequest request) {
         return itemService.createTextItem(roomKey, request);
     }
 
-    @PostMapping(value = "/room/{roomKey}/item/file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/rooms/{roomKey}/items/file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ItemResponse createFileItem(@PathVariable String roomKey, @ModelAttribute CreateFileItemRequest request) {
         return itemService.createFileItem(roomKey, request);
     }
 
-    @GetMapping("/room/{roomKey}/items")
+    @GetMapping("/rooms/{roomKey}/items")
     public List<ItemResponse> getItems(@PathVariable String roomKey) {
         return itemService.getItems(roomKey);
     }
 
-    @DeleteMapping("room/{roomKey}/item/{itemId}")
+    @DeleteMapping("/rooms/{roomKey}/items/{itemId}")
     public ResponseEntity<Void> deleteItem(@PathVariable String roomKey, @PathVariable Long itemId) throws IOException {
         itemService.deleteItem(roomKey, itemId);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/room/{roomKey}/item/{itemId}/file")
+    @GetMapping("/rooms/{roomKey}/items/{itemId}/file")
     public ResponseEntity<Resource> getFile(@PathVariable String roomKey, @PathVariable Long itemId) throws IOException {
         FileDownload file = itemService.getFile(roomKey, itemId);
 

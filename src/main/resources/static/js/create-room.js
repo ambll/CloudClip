@@ -11,7 +11,9 @@ form.addEventListener("submit", async function (event) {
 
     const roomData = {
         name,
-        password,
+        password: password === ""
+                ? null
+                : password,
         visibility,
         expiresAt: expiresAtValue === ""
             ? null

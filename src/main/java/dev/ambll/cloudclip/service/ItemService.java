@@ -140,8 +140,8 @@ public class ItemService {
         response.setFileName(item.getFileName());
         if (item.getType() == ItemType.FILE) {
             response.setDownloadUrl(
-                    "/room/" + item.getRoom().getRoomKey()
-                            + "/item/" + item.getId() + "/file"
+                    "/rooms/" + item.getRoom().getRoomKey()
+                            + "/items/" + item.getId() + "/file"
             );
         }
         response.setCreatedAt(item.getCreatedAt());
