@@ -18,10 +18,12 @@
         ← К комнатам
     </a>
 </header>
+
 <main>
     <div id="errorMessage" style="display: none;"></div>
 
     <div id="roomContent">
+
         <section id="roomInfo">
             <p id="roomVisibility"></p>
             <p id="roomExpiration"></p>
@@ -29,10 +31,12 @@
 
         <section id="createItem">
             <h2>Добавить текст</h2>
+
             <textarea
                     id="textInput"
                     placeholder="Введите текст..."
             ></textarea>
+
             <button id="addTextButton">
                 Добавить
             </button>
@@ -40,7 +44,9 @@
 
         <section id="createFileItem">
             <h2>Добавить файл</h2>
+
             <input type="file" id="fileInput">
+
             <button id="addFileButton">
                 Загрузить
             </button>
@@ -48,10 +54,12 @@
 
         <section>
             <h2>Содержимое</h2>
+
             <div id="items"></div>
         </section>
+
     </div>
-</main></main>
+</main>
 
 <script src="/js/room.js"></script>
 

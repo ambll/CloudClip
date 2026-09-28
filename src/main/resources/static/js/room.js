@@ -136,14 +136,11 @@ async function loadItems() {
                 );
 
                 if (!response.ok) {
-                    if (response.status === 404) {
-                        showRoomError("Комната или item не найдены");
-                    } else if (response.status === 410) {
-                        showRoomError("Срок действия комнаты истёк");
-                    } else {
-                        alert("Не удалось удалить item");
+                    if (handleRoomError(response)) {
+                        return;
                     }
 
+                    alert("Не удалось удалить item");
                     return;
                 }
 
@@ -169,6 +166,11 @@ addTextButton.addEventListener(
             document.getElementById("textInput");
 
         const text = textInput.value;
+
+        if (text.trim() === "") {
+            alert("Введите текст");
+            return;
+        }
 
         const response = await fetch(
             `/rooms/${roomKey}/items/text`,
@@ -228,11 +230,11 @@ addFileButton.addEventListener(
         );
 
         if (!response.ok) {
-            if (response.status === 404) {
-                showRoomError("Комната не найдена");
-            } else if (response.status === 410) {
-                showRoomError("Срок действия комнаты истёк");
-            } else if (response.status === 413) {
+            if (handleRoomError(response)) {
+                return;
+            }
+
+            if (response.status === 413) {
                 alert("Файл слишком большой");
             } else {
                 alert("Не удалось загрузить файл");
