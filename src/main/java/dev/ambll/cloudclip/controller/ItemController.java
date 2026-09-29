@@ -5,6 +5,7 @@ import dev.ambll.cloudclip.dto.request.CreateTextItemRequest;
 import dev.ambll.cloudclip.dto.response.FileDownload;
 import dev.ambll.cloudclip.dto.response.ItemResponse;
 import dev.ambll.cloudclip.service.ItemService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ContentDisposition;
@@ -22,12 +23,12 @@ public class ItemController {
     private final ItemService itemService;
 
     @PostMapping(value = "/rooms/{roomKey}/items/text", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ItemResponse createTextItem(@PathVariable String roomKey, @RequestBody CreateTextItemRequest request) {
+    public ItemResponse createTextItem(@PathVariable String roomKey, @Valid @RequestBody CreateTextItemRequest request) {
         return itemService.createTextItem(roomKey, request);
     }
 
     @PostMapping(value = "/rooms/{roomKey}/items/file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ItemResponse createFileItem(@PathVariable String roomKey, @ModelAttribute CreateFileItemRequest request) {
+    public ItemResponse createFileItem(@PathVariable String roomKey, @Valid @ModelAttribute CreateFileItemRequest request) {
         return itemService.createFileItem(roomKey, request);
     }
 

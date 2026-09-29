@@ -4,6 +4,7 @@ import dev.ambll.cloudclip.dto.request.CreateRoomRequest;
 import dev.ambll.cloudclip.dto.request.RoomAccessRequest;
 import dev.ambll.cloudclip.dto.response.RoomResponse;
 import dev.ambll.cloudclip.service.RoomService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -22,7 +23,7 @@ public class RoomController {
     }
 
     @PostMapping("/rooms")
-    public RoomResponse createRoom(@RequestBody CreateRoomRequest request) {
+    public RoomResponse createRoom(@Valid @RequestBody CreateRoomRequest request) {
         return roomService.createRoom(request);
     }
 
