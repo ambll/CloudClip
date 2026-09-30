@@ -13,6 +13,7 @@ import dev.ambll.cloudclip.exception.RoomExpiredException;
 import dev.ambll.cloudclip.exception.RoomNotFoundException;
 import dev.ambll.cloudclip.repository.ItemRepository;
 import dev.ambll.cloudclip.repository.RoomRepository;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -113,6 +114,15 @@ public class RoomService {
         )) {
             throw new InvalidRoomPasswordException();
         }
+    }
+
+    public boolean hasAccess(
+            String roomKey,
+            HttpSession session
+    ) {
+        return Boolean.TRUE.equals(
+                session.getAttribute("room:" + roomKey)
+        );
     }
 
     public Room getActiveRoom(String roomKey) {

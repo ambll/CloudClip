@@ -48,4 +48,11 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(e.getMessage());
     }
+
+    @ExceptionHandler(RoomAccessDeniedException.class)
+    public ResponseEntity<String> handleRoomAccessDenied(RoomAccessDeniedException e) {
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(e.getMessage());
+    }
 }

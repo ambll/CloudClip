@@ -4,7 +4,11 @@ import dev.ambll.cloudclip.dto.request.CreateFileItemRequest;
 import dev.ambll.cloudclip.dto.request.CreateTextItemRequest;
 import dev.ambll.cloudclip.dto.response.FileDownload;
 import dev.ambll.cloudclip.dto.response.ItemResponse;
+import dev.ambll.cloudclip.entity.Room;
+import dev.ambll.cloudclip.exception.InvalidRoomPasswordException;
 import dev.ambll.cloudclip.service.ItemService;
+import dev.ambll.cloudclip.service.RoomService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -21,6 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemService itemService;
+    private final RoomService roomService;
 
     @PostMapping(value = "/rooms/{roomKey}/items/text", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ItemResponse createTextItem(@PathVariable String roomKey, @Valid @RequestBody CreateTextItemRequest request) {
@@ -32,8 +37,21 @@ public class ItemController {
         return itemService.createFileItem(roomKey, request);
     }
 
-    @GetMapping("/rooms/{roomKey}/items")
-    public List<ItemResponse> getItems(@PathVariable String roomKey) {
+    @GetMapping("/{roomKey}/items")
+    public List<ItemResponse> getItems(
+            @PathVariable String roomKey,
+            HttpSession session
+    ) {
+        Room room = roomService.getActiveRoom(roomKey);
+
+        if (room.getPasswordHash() != null) {
+            boolean hasAccess = roomService.hasAccess(roomKey, session);
+
+            if (!hasAccess) {
+                throw new InvalidRoomPasswordException();
+            }
+        }
+
         return itemService.getItems(roomKey);
     }
 
