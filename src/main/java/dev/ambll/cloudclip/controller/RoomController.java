@@ -39,7 +39,7 @@ public class RoomController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{roomKey}/access")
+    @PostMapping("/rooms/{roomKey}/access")
     public void accessRoom(@PathVariable String roomKey, @RequestBody RoomAccessRequest request, HttpSession session
     ) {
         roomService.accessRoom(roomKey, request);

@@ -9,8 +9,6 @@ import dev.ambll.cloudclip.entity.Room;
 import dev.ambll.cloudclip.enums.ItemType;
 import dev.ambll.cloudclip.exception.*;
 import dev.ambll.cloudclip.repository.ItemRepository;
-import dev.ambll.cloudclip.repository.RoomRepository;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -30,7 +28,6 @@ import java.util.Objects;
 public class ItemService {
     private final ItemRepository itemRepository;
     private final RoomService roomService;
-    private final RoomRepository roomRepository;
     private final FileStorageService fileStorageService;
 
     public ItemResponse createTextItem(

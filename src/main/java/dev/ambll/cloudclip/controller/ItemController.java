@@ -6,6 +6,7 @@ import dev.ambll.cloudclip.dto.response.FileDownload;
 import dev.ambll.cloudclip.dto.response.ItemResponse;
 import dev.ambll.cloudclip.entity.Room;
 import dev.ambll.cloudclip.exception.InvalidRoomPasswordException;
+import dev.ambll.cloudclip.exception.RoomAccessDeniedException;
 import dev.ambll.cloudclip.service.ItemService;
 import dev.ambll.cloudclip.service.RoomService;
 import jakarta.servlet.http.HttpSession;
@@ -37,7 +38,7 @@ public class ItemController {
         return itemService.createFileItem(roomKey, request);
     }
 
-    @GetMapping("/{roomKey}/items")
+    @GetMapping("/rooms/{roomKey}/items")
     public List<ItemResponse> getItems(
             @PathVariable String roomKey,
             HttpSession session
@@ -48,7 +49,7 @@ public class ItemController {
             boolean hasAccess = roomService.hasAccess(roomKey, session);
 
             if (!hasAccess) {
-                throw new InvalidRoomPasswordException();
+                throw new RoomAccessDeniedException();
             }
         }
 
