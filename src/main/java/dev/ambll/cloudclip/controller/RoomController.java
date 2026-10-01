@@ -8,7 +8,7 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,7 +40,10 @@ public class RoomController {
     }
 
     @PostMapping("/rooms/{roomKey}/access")
-    public void accessRoom(@PathVariable String roomKey, @RequestBody RoomAccessRequest request, HttpSession session
+    public void accessRoom(
+            @PathVariable String roomKey,
+            @RequestBody RoomAccessRequest request,
+            HttpSession session
     ) {
         roomService.accessRoom(roomKey, request);
 

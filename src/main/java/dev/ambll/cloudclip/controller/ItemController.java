@@ -4,9 +4,6 @@ import dev.ambll.cloudclip.dto.request.CreateFileItemRequest;
 import dev.ambll.cloudclip.dto.request.CreateTextItemRequest;
 import dev.ambll.cloudclip.dto.response.FileDownload;
 import dev.ambll.cloudclip.dto.response.ItemResponse;
-import dev.ambll.cloudclip.entity.Room;
-import dev.ambll.cloudclip.exception.InvalidRoomPasswordException;
-import dev.ambll.cloudclip.exception.RoomAccessDeniedException;
 import dev.ambll.cloudclip.service.ItemService;
 import dev.ambll.cloudclip.service.RoomService;
 import jakarta.servlet.http.HttpSession;
@@ -29,12 +26,22 @@ public class ItemController {
     private final RoomService roomService;
 
     @PostMapping(value = "/rooms/{roomKey}/items/text", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ItemResponse createTextItem(@PathVariable String roomKey, @Valid @RequestBody CreateTextItemRequest request) {
+    public ItemResponse createTextItem(
+            @PathVariable String roomKey,
+            @Valid @RequestBody CreateTextItemRequest request,
+            HttpSession session
+    ) {
+        roomService.requireAccess(roomKey, session);
         return itemService.createTextItem(roomKey, request);
     }
 
     @PostMapping(value = "/rooms/{roomKey}/items/file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ItemResponse createFileItem(@PathVariable String roomKey, @Valid @ModelAttribute CreateFileItemRequest request) {
+    public ItemResponse createFileItem(
+            @PathVariable String roomKey,
+            @Valid @ModelAttribute CreateFileItemRequest request,
+            HttpSession session
+    ) {
+        roomService.requireAccess(roomKey, session);
         return itemService.createFileItem(roomKey, request);
     }
 
@@ -43,27 +50,29 @@ public class ItemController {
             @PathVariable String roomKey,
             HttpSession session
     ) {
-        Room room = roomService.getActiveRoom(roomKey);
-
-        if (room.getPasswordHash() != null) {
-            boolean hasAccess = roomService.hasAccess(roomKey, session);
-
-            if (!hasAccess) {
-                throw new RoomAccessDeniedException();
-            }
-        }
+        roomService.requireAccess(roomKey, session);
 
         return itemService.getItems(roomKey);
     }
 
     @DeleteMapping("/rooms/{roomKey}/items/{itemId}")
-    public ResponseEntity<Void> deleteItem(@PathVariable String roomKey, @PathVariable Long itemId) throws IOException {
+    public ResponseEntity<Void> deleteItem(
+            @PathVariable String roomKey,
+            @PathVariable Long itemId,
+            HttpSession session
+    ) throws IOException {
+        roomService.requireAccess(roomKey, session);
         itemService.deleteItem(roomKey, itemId);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/rooms/{roomKey}/items/{itemId}/file")
-    public ResponseEntity<Resource> getFile(@PathVariable String roomKey, @PathVariable Long itemId) throws IOException {
+    public ResponseEntity<Resource> getFile(
+            @PathVariable String roomKey,
+            @PathVariable Long itemId,
+            HttpSession session
+    ) throws IOException {
+        roomService.requireAccess(roomKey, session);
         FileDownload file = itemService.getFile(roomKey, itemId);
 
         ContentDisposition contentDisposition = ContentDisposition.builder("attachment")

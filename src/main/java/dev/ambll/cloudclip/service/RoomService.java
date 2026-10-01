@@ -7,10 +7,7 @@ import dev.ambll.cloudclip.entity.Item;
 import dev.ambll.cloudclip.entity.Room;
 import dev.ambll.cloudclip.enums.ItemType;
 import dev.ambll.cloudclip.enums.Visibility;
-import dev.ambll.cloudclip.exception.InvalidRoomPasswordException;
-import dev.ambll.cloudclip.exception.ItemNotFoundException;
-import dev.ambll.cloudclip.exception.RoomExpiredException;
-import dev.ambll.cloudclip.exception.RoomNotFoundException;
+import dev.ambll.cloudclip.exception.*;
 import dev.ambll.cloudclip.repository.ItemRepository;
 import dev.ambll.cloudclip.repository.RoomRepository;
 import jakarta.servlet.http.HttpSession;
@@ -131,6 +128,16 @@ public class RoomService {
 
         if(room.getExpiresAt() != null && !LocalDateTime.now().isBefore(room.getExpiresAt())) {
             throw new RoomExpiredException();
+        }
+
+        return room;
+    }
+
+    public Room requireAccess(String roomKey, HttpSession session) {
+        Room room = getActiveRoom(roomKey);
+
+        if(room.getPasswordHash() != null && !hasAccess(roomKey, session)) {
+            throw new RoomAccessDeniedException();
         }
 
         return room;
