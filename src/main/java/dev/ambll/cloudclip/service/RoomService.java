@@ -157,6 +157,7 @@ public class RoomService {
         response.setCreatedAt(room.getCreatedAt());
         response.setUpdatedAt(room.getUpdatedAt());
         response.setExpiresAt(room.getExpiresAt());
+        response.setPasswordProtected(room.getPasswordHash() != null);
 
         return response;
     }

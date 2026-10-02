@@ -16,6 +16,7 @@ function showRoomError(message) {
     roomContent.style.display = "none";
 }
 
+
 function handleRoomError(response) {
     if (response.status === 404) {
         showRoomError("Комната не найдена");
@@ -28,6 +29,42 @@ function handleRoomError(response) {
     }
 
     return false;
+}
+
+
+function showPasswordModal() {
+    const passwordModal =
+        document.getElementById("passwordModal");
+
+    passwordModal.style.display = "flex";
+
+    document.getElementById("passwordInput").focus();
+}
+
+
+function hidePasswordModal() {
+    const passwordModal =
+        document.getElementById("passwordModal");
+
+    passwordModal.style.display = "none";
+}
+
+
+function showPasswordError(message) {
+    const passwordError =
+        document.getElementById("passwordError");
+
+    passwordError.textContent = message;
+    passwordError.style.display = "block";
+}
+
+
+function hidePasswordError() {
+    const passwordError =
+        document.getElementById("passwordError");
+
+    passwordError.textContent = "";
+    passwordError.style.display = "none";
 }
 
 
@@ -73,6 +110,11 @@ async function loadRoom() {
 
 async function loadItems() {
     const response = await fetch(`/rooms/${roomKey}/items`);
+
+    if (response.status === 403) {
+        showPasswordModal();
+        return;
+    }
 
     if (!response.ok) {
         if (handleRoomError(response)) {
@@ -155,6 +197,59 @@ async function loadItems() {
 }
 
 
+const passwordForm =
+    document.getElementById("passwordForm");
+
+passwordForm.addEventListener(
+    "submit",
+    async function (event) {
+
+        event.preventDefault();
+
+        hidePasswordError();
+
+        const passwordInput =
+            document.getElementById("passwordInput");
+
+        const password = passwordInput.value;
+
+        const response = await fetch(
+            `/rooms/${roomKey}/access`,
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    password: password
+                })
+            }
+        );
+
+        if (response.status === 403) {
+            showPasswordError("Неверный пароль");
+            passwordInput.focus();
+            return;
+        }
+
+        if (!response.ok) {
+            showPasswordError(
+                "Не удалось получить доступ к комнате"
+            );
+            return;
+        }
+
+        hidePasswordModal();
+
+        passwordInput.value = "";
+
+        await loadItems();
+    }
+);
+
+
 const addTextButton =
     document.getElementById("addTextButton");
 
@@ -187,6 +282,11 @@ addTextButton.addEventListener(
 
         if (!response.ok) {
             if (handleRoomError(response)) {
+                return;
+            }
+
+            if (response.status === 403) {
+                showPasswordModal();
                 return;
             }
 
@@ -231,6 +331,11 @@ addFileButton.addEventListener(
 
         if (!response.ok) {
             if (handleRoomError(response)) {
+                return;
+            }
+
+            if (response.status === 403) {
+                showPasswordModal();
                 return;
             }
 
