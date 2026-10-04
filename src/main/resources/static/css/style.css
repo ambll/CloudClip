@@ -1,45 +1,96 @@
+/* =========================
+   Base
+   ========================= */
+
 body {
     font-family: sans-serif;
     max-width: 900px;
     margin: 40px auto;
     padding: 0 20px;
-    background: #f5f5f5;
+
+    background: #171417;
+    color: #f5eef2;
 }
+
+
+/* =========================
+   Header
+   ========================= */
 
 header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
 }
 
 header h1 {
-    margin: 0;
+    margin: 0 0 8px;
+}
+
+
+/* =========================
+   Navigation
+   ========================= */
+
+.back-button {
+    text-decoration: none;
+    color: #ffb7b4;
+}
+
+.back-button:hover {
+    text-decoration: underline;
+}
+
+
+/* =========================
+   Buttons
+   ========================= */
+
+button {
+    font-family: inherit;
 }
 
 .create-room-button {
+    display: inline-block;
+
     padding: 10px 16px;
+
     border-radius: 8px;
-    background: #222;
-    color: white;
+
+    background: #ffb7b4;
+    color: #211c20;
+
     text-decoration: none;
+    font-weight: bold;
+
+    transition: background 0.15s ease;
 }
 
 .create-room-button:hover {
-    background: #444;
+    background: #ffcfcc;
 }
+
+
+/* =========================
+   Rooms
+   ========================= */
 
 #rooms {
     display: flex;
     flex-direction: column;
+
     gap: 16px;
+
     margin-top: 30px;
 }
 
 .room-card {
     padding: 20px;
-    border: 1px solid #ddd;
+
+    border: 1px solid #3a3137;
     border-radius: 12px;
-    background: #fff;
+
+    background: #211c20;
 }
 
 .room-card h2 {
@@ -49,63 +100,388 @@ header h1 {
 
 .room-card p {
     margin: 6px 0;
-    color: #666;
+    color: #b9adb4;
 }
 
 .room-card a {
     display: inline-block;
+
     margin-top: 12px;
+
+    color: #ffb7b4;
+
     text-decoration: none;
     font-weight: bold;
 }
 
-.item-card {
-    padding: 16px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    background: white;
-    overflow-wrap: anywhere;
+.room-card a:hover {
+    text-decoration: underline;
 }
+
+
+/* =========================
+   Room menu
+   ========================= */
+
+.room-menu {
+    position: relative;
+}
+
+.room-menu-button {
+    border: none;
+    background: transparent;
+
+    color: #f5eef2;
+
+    font-size: 28px;
+    line-height: 1;
+
+    cursor: pointer;
+
+    padding: 4px 8px;
+
+    border-radius: 8px;
+
+    transition: background 0.15s ease;
+}
+
+.room-menu-button:hover {
+    background: #2b252a;
+}
+
+.room-menu-dropdown {
+    position: absolute;
+
+    top: 100%;
+    right: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    min-width: 220px;
+
+    margin-top: 8px;
+    padding: 6px;
+
+    background: #211c20;
+
+    border: 1px solid #3a3137;
+    border-radius: 10px;
+
+    box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.4);
+
+    z-index: 10;
+}
+
+.room-menu-dropdown button {
+    border: none;
+    background: transparent;
+
+    color: #f5eef2;
+
+    padding: 10px 12px;
+
+    text-align: left;
+    font-size: 14px;
+
+    border-radius: 6px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s ease,
+        color 0.15s ease;
+}
+
+.room-menu-dropdown button:hover {
+    background: #2b252a;
+}
+
+.room-menu-dropdown button.danger {
+    color: #ff6b6b;
+}
+
+.room-menu-dropdown button.danger:hover {
+    background: #3a2025;
+}
+
+
+/* =========================
+   Room info
+   ========================= */
+
+#roomInfo {
+    margin-top: 20px;
+}
+
+#roomInfo p {
+    margin: 6px 0;
+
+    color: #b9adb4;
+}
+
+
+/* =========================
+   Creating items
+   ========================= */
 
 #createItem {
     margin-top: 30px;
 }
 
+#createFileItem {
+    margin-top: 30px;
+}
+
 #textInput {
     display: block;
+
     width: 100%;
     min-height: 100px;
+
     margin-bottom: 10px;
+
+    padding: 10px;
+
     box-sizing: border-box;
+
     resize: vertical;
+
+    background: #211c20;
+    color: #f5eef2;
+
+    border: 1px solid #3a3137;
+    border-radius: 8px;
+
+    font-family: inherit;
 }
+
+#textInput::placeholder {
+    color: #81747c;
+}
+
+#textInput:focus {
+    outline: none;
+
+    border-color: #ffb7b4;
+
+    box-shadow: 0 0 0 2px rgba(255, 183, 180, 0.15);
+}
+
+
+/* =========================
+   Inputs
+   ========================= */
+
+input,
+select {
+    background: #211c20;
+    color: #f5eef2;
+
+    border: 1px solid #3a3137;
+    border-radius: 8px;
+
+    padding: 10px;
+
+    font-family: inherit;
+
+    box-sizing: border-box;
+}
+
+input::placeholder {
+    color: #81747c;
+}
+
+input:focus,
+select:focus {
+    outline: none;
+
+    border-color: #ffb7b4;
+
+    box-shadow: 0 0 0 2px rgba(255, 183, 180, 0.15);
+}
+
+
+/* =========================
+   Items
+   ========================= */
 
 .item-card {
     margin-top: 16px;
     padding: 16px;
-    border: 1px solid #ddd;
+
+    border: 1px solid #3a3137;
     border-radius: 10px;
-    background: white;
+
+    background: #211c20;
+
+    overflow-wrap: anywhere;
 }
+
+.item-card p {
+    margin-top: 0;
+}
+
+
+/* =========================
+   Links
+   ========================= */
+
+a {
+    color: #ffb7b4;
+}
+
+a:hover {
+    color: #ffcfcc;
+}
+
+
+/* =========================
+   Modals
+   ========================= */
 
 .modal {
     position: fixed;
     inset: 0;
 
     display: flex;
+
     align-items: center;
     justify-content: center;
 
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.7);
+
+    z-index: 100;
 }
 
 .modal-content {
     width: 400px;
+
+    max-width: calc(100% - 40px);
+
     padding: 24px;
 
-    background: white;
+    background: #211c20;
+
+    border: 1px solid #3a3137;
     border-radius: 12px;
+
+    box-sizing: border-box;
+
+    box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.5);
 }
+
+.modal-content h2 {
+    margin-top: 0;
+}
+
+.modal-content form {
+    display: flex;
+    flex-direction: column;
+
+    gap: 12px;
+}
+
+.modal-content input {
+    width: 100%;
+}
+
+.modal-error {
+    color: #ff6b6b;
+}
+
+
+/* =========================
+   Modal buttons
+   ========================= */
+
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    margin-top: 4px;
+}
+
+.modal-buttons button {
+    padding: 10px 16px;
+
+    border: none;
+    border-radius: 6px;
+
+    cursor: pointer;
+}
+
+
+/* =========================
+   Normal modal button
+   ========================= */
+
+.modal-buttons button:not(.danger-button) {
+    background: #2b252a;
+    color: #f5eef2;
+}
+
+.modal-buttons button:not(.danger-button):hover {
+    background: #3a3137;
+}
+
+
+/* =========================
+   Delete button
+   ========================= */
+
+.danger-button {
+    background: #c62828;
+    color: white;
+
+    border: none;
+    border-radius: 6px;
+
+    padding: 10px 16px;
+
+    cursor: pointer;
+
+    transition: background 0.15s ease;
+}
+
+.danger-button:hover {
+    background: #a51f1f;
+}
+
+
+/* =========================
+   Create room form
+   ========================= */
+
+#createRoomForm {
+    display: flex;
+    flex-direction: column;
+
+    gap: 16px;
+
+    max-width: 400px;
+}
+
+#createRoomForm label {
+    display: flex;
+    flex-direction: column;
+
+    gap: 6px;
+}
+
+.optional {
+    font-size: 0.85em;
+    opacity: 0.6;
+}
+
+
+/* =========================
+   Misc
+   ========================= */
 
 .hidden {
     display: none;

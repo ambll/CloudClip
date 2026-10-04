@@ -26,7 +26,18 @@
     </label>
 
     <label>
-        Пароль
+        Пароль владельца
+        <input
+                type="password"
+                id="ownerPassword"
+                name="ownerPassword"
+                required
+        >
+    </label>
+
+    <label>
+        Пароль комнаты
+        <span class="optional">(необязательно)</span>
         <input
                 type="password"
                 id="password"
@@ -44,6 +55,7 @@
 
     <label>
         Срок действия
+        <span class="optional">(необязательно)</span>
         <input
                 type="datetime-local"
                 id="expiresAt"
