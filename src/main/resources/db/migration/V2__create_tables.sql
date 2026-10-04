@@ -1,0 +1,2 @@
+ALTER TABLE rooms
+ADD COLUMN owner_password_hash VARCHAR(255) NOT NULL;

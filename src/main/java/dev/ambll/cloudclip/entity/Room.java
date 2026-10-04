@@ -26,6 +26,8 @@ public class Room {
     private String name;
     @Column(name = "password_hash")
     private String passwordHash;
+    @Column(name = "owner_password_hash")
+    private String ownerPasswordHash;
     @Enumerated(EnumType.STRING)
     @Column(name = "visibility", nullable = false)
     private Visibility visibility;

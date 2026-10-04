@@ -15,6 +15,8 @@ public class CreateRoomRequest {
     @NotBlank
     private String name;
     private String password;
+    @NotBlank
+    private String ownerPassword;
     @NotNull
     private Visibility visibility;
     @Future

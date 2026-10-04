@@ -34,15 +34,15 @@ public class RoomController {
     }
 
     @DeleteMapping("/rooms/{roomKey}")
-    public ResponseEntity<Void> deleteRoom(@PathVariable String roomKey) {
-        roomService.deleteRoom(roomKey);
+    public ResponseEntity<Void> deleteRoom(@PathVariable String roomKey, @Valid @RequestBody RoomAccessRequest request) {
+        roomService.deleteRoom(roomKey, request);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/rooms/{roomKey}/access")
     public void accessRoom(
             @PathVariable String roomKey,
-            @RequestBody RoomAccessRequest request,
+            @Valid @RequestBody RoomAccessRequest request,
             HttpSession session
     ) {
         roomService.accessRoom(roomKey, request);

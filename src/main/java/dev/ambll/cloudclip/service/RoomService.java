@@ -42,6 +42,9 @@ public class RoomService {
                     passwordEncoder.encode(request.getPassword())
             );
         }
+        room.setOwnerPasswordHash(
+                passwordEncoder.encode(request.getOwnerPassword())
+        );
         room.setVisibility(request.getVisibility());
         room.setCreatedAt(LocalDateTime.now());
         room.setUpdatedAt(LocalDateTime.now());
@@ -54,10 +57,14 @@ public class RoomService {
         return response;
     }
 
-    public void deleteRoom(String roomKey) {
-        Room room = roomRepository.findByRoomKey(roomKey)
-                .orElseThrow(RoomNotFoundException::new);
+    public void deleteRoom(String roomKey, RoomAccessRequest request) {
+        Room room = getActiveRoom(roomKey);
 
+        accessOwnerPassword(room, request);
+        deleteRoom(room);
+    }
+
+    private void deleteRoom(Room room) {
         List<Item> items = itemRepository.findByRoomAndType(room, ItemType.FILE);
         for (Item item : items) {
             try {
@@ -94,7 +101,7 @@ public class RoomService {
         List<Room> expiresRooms = roomRepository.findExpiresRooms();
 
         for (Room room : expiresRooms) {
-            deleteRoom(room.getRoomKey());
+            deleteRoom(room);
         }
     }
 
@@ -109,7 +116,16 @@ public class RoomService {
                 request.getPassword(),
                 room.getPasswordHash()
         )) {
-            throw new InvalidRoomPasswordException();
+            throw new InvalidPasswordException();
+        }
+    }
+
+    private void accessOwnerPassword(Room room, RoomAccessRequest request) {
+        if(!passwordEncoder.matches(
+                request.getPassword(),
+                room.getOwnerPasswordHash()
+        )) {
+            throw new InvalidPasswordException();
         }
     }
 
