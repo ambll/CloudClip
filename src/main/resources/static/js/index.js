@@ -1,41 +1,16 @@
-const roomsContainer = document.getElementById("rooms");
+const form = document.getElementById("joinRoomForm");
 
-async function loadRooms() {
-    const response = await fetch("/rooms");
+form.addEventListener("submit", function (event) {
 
-    const rooms = await response.json();
+    event.preventDefault();
 
-    console.log(rooms);
+    const roomKey =
+        document.getElementById("roomKey").value.trim();
 
-    roomsContainer.innerHTML = "";
+    if (roomKey === "") {
+        return;
+    }
 
-    rooms.forEach(function (room) {
-
-        const card = document.createElement("div");
-        card.classList.add("room-card");
-
-        const name = document.createElement("h2");
-        name.textContent = room.name;
-
-        const visibility = document.createElement("p");
-        visibility.textContent = room.visibility === "PUBLIC"
-            ? "Публичная комната"
-            : "Приватная комната";
-
-        const createdAt = document.createElement("p");
-        createdAt.textContent = `Создана: ${room.createdAt}`;
-
-        const link = document.createElement("a");
-        link.textContent = "Открыть →";
-        link.href = `/room.html?roomKey=${room.roomKey}`;
-
-        card.appendChild(name);
-        card.appendChild(visibility);
-        card.appendChild(createdAt);
-        card.appendChild(link);
-
-        roomsContainer.appendChild(card);
-    });
-}
-
-loadRooms();
+    window.location.href =
+        `/room.html?roomKey=${encodeURIComponent(roomKey)}`;
+});

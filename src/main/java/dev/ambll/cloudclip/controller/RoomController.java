@@ -1,7 +1,6 @@
 package dev.ambll.cloudclip.controller;
 
-import dev.ambll.cloudclip.dto.request.CreateRoomRequest;
-import dev.ambll.cloudclip.dto.request.RoomAccessRequest;
+import dev.ambll.cloudclip.dto.request.*;
 import dev.ambll.cloudclip.dto.response.RoomResponse;
 import dev.ambll.cloudclip.service.RoomService;
 import jakarta.servlet.http.HttpSession;
@@ -11,17 +10,10 @@ import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 public class RoomController {
     private final RoomService roomService;
-
-    @GetMapping("/rooms")
-    public List<RoomResponse> getRooms() {
-        return roomService.listRooms();
-    }
 
     @PostMapping("/rooms")
     public RoomResponse createRoom(@Valid @RequestBody CreateRoomRequest request) {
@@ -36,6 +28,30 @@ public class RoomController {
     @DeleteMapping("/rooms/{roomKey}")
     public ResponseEntity<Void> deleteRoom(@PathVariable String roomKey, @Valid @RequestBody RoomAccessRequest request) {
         roomService.deleteRoom(roomKey, request);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/rooms/{roomKey}/name")
+    public ResponseEntity<Void>  renameRoom(@PathVariable String roomKey, @Valid @RequestBody RenameRoomRequest request) {
+        roomService.renameRoom(roomKey, request);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/rooms/{roomKey}/password")
+    public ResponseEntity<Void>  updateRoomPassword(@PathVariable String roomKey, @Valid @RequestBody UpdatePasswordRequest request) {
+        roomService.updateRoomPassword(roomKey,  request);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/rooms/{roomKey}/owner-password")
+    public ResponseEntity<Void>  updateOwnerRoomPassword(@PathVariable String roomKey, @Valid @RequestBody UpdateOwnerPasswordRequest request) {
+        roomService.updateOwnerRoomPassword(roomKey, request);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/rooms/{roomKey}/expiration")
+    public ResponseEntity<Void>  updateRoomExpiration(@PathVariable String roomKey, @Valid @RequestBody UpdateExpirationRequest request) {
+        roomService.updateRoomExpiration(roomKey, request);
         return ResponseEntity.noContent().build();
     }
 

@@ -9,10 +9,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class CreateRoomRequest {
-    @NotBlank
-    private String name;
-    private String password;
+public class UpdateExpirationRequest {
     @NotBlank
     private String ownerPassword;
     @Future

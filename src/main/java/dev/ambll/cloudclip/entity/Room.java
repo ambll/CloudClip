@@ -1,7 +1,6 @@
 package dev.ambll.cloudclip.entity;
 
 
-import dev.ambll.cloudclip.enums.Visibility;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,11 +25,8 @@ public class Room {
     private String name;
     @Column(name = "password_hash")
     private String passwordHash;
-    @Column(name = "owner_password_hash")
+    @Column(name = "owner_password_hash", nullable = false)
     private String ownerPasswordHash;
-    @Enumerated(EnumType.STRING)
-    @Column(name = "visibility", nullable = false)
-    private Visibility visibility;
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
     @Column(name = "updated_at")

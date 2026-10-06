@@ -72,50 +72,42 @@ button {
 
 
 /* =========================
-   Rooms
+   Join room
    ========================= */
 
-#rooms {
-    display: flex;
-    flex-direction: column;
-
-    gap: 16px;
-
+#joinRoom {
     margin-top: 30px;
 }
 
-.room-card {
-    padding: 20px;
+#joinRoomForm {
+    display: flex;
+    gap: 10px;
 
-    border: 1px solid #3a3137;
-    border-radius: 12px;
-
-    background: #211c20;
+    max-width: 500px;
 }
 
-.room-card h2 {
-    margin-top: 0;
-    margin-bottom: 10px;
+#joinRoomForm input {
+    flex: 1;
 }
 
-.room-card p {
-    margin: 6px 0;
-    color: #b9adb4;
-}
+#joinRoomForm button {
+    padding: 10px 16px;
 
-.room-card a {
-    display: inline-block;
+    border: none;
+    border-radius: 8px;
 
-    margin-top: 12px;
+    background: #ffb7b4;
+    color: #211c20;
 
-    color: #ffb7b4;
-
-    text-decoration: none;
     font-weight: bold;
+
+    cursor: pointer;
+
+    transition: background 0.15s ease;
 }
 
-.room-card a:hover {
-    text-decoration: underline;
+#joinRoomForm button:hover {
+    background: #ffcfcc;
 }
 
 

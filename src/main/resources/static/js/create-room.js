@@ -7,7 +7,6 @@ form.addEventListener("submit", async function (event) {
     const name = document.getElementById("name").value;
     const password = document.getElementById("password").value;
     const ownerPassword = document.getElementById("ownerPassword").value;
-    const visibility = document.getElementById("visibility").value;
     const expiresAtValue = document.getElementById("expiresAt").value;
 
     const roomData = {
@@ -16,7 +15,6 @@ form.addEventListener("submit", async function (event) {
             ? null
             : password,
         ownerPassword,
-        visibility,
         expiresAt: expiresAtValue === ""
             ? null
             : expiresAtValue

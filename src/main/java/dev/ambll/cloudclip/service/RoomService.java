@@ -1,20 +1,16 @@
 package dev.ambll.cloudclip.service;
 
-import dev.ambll.cloudclip.dto.request.CreateRoomRequest;
-import dev.ambll.cloudclip.dto.request.RoomAccessRequest;
+import dev.ambll.cloudclip.dto.request.*;
 import dev.ambll.cloudclip.dto.response.RoomResponse;
 import dev.ambll.cloudclip.entity.Item;
 import dev.ambll.cloudclip.entity.Room;
 import dev.ambll.cloudclip.enums.ItemType;
-import dev.ambll.cloudclip.enums.Visibility;
 import dev.ambll.cloudclip.exception.*;
 import dev.ambll.cloudclip.repository.ItemRepository;
 import dev.ambll.cloudclip.repository.RoomRepository;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -45,7 +41,6 @@ public class RoomService {
         room.setOwnerPasswordHash(
                 passwordEncoder.encode(request.getOwnerPassword())
         );
-        room.setVisibility(request.getVisibility());
         room.setCreatedAt(LocalDateTime.now());
         room.setUpdatedAt(LocalDateTime.now());
         room.setExpiresAt(request.getExpiresAt());
@@ -60,7 +55,7 @@ public class RoomService {
     public void deleteRoom(String roomKey, RoomAccessRequest request) {
         Room room = getActiveRoom(roomKey);
 
-        accessOwnerPassword(room, request);
+        accessOwnerPassword(room, request.getPassword());
         deleteRoom(room);
     }
 
@@ -83,17 +78,55 @@ public class RoomService {
         return toRoomResponse(room);
     }
 
-    public List<RoomResponse> listRooms() {
-        Pageable pageable = PageRequest.of(0, 10);
+    public void renameRoom(String roomKey, RenameRoomRequest request) {
+        Room room = getActiveRoom(roomKey);
 
-        return roomRepository
-                .findRoomsByVisibility(
-                        Visibility.PUBLIC,
-                        pageable
-                )
-                .stream()
-                .map(this::toRoomResponse)
-                .toList();
+        accessOwnerPassword(room, request.getOwnerPassword());
+
+        room.setName(request.getNewName());
+        room.setUpdatedAt(LocalDateTime.now());
+
+        roomRepository.save(room);
+    }
+
+    public void updateRoomPassword(String roomKey, UpdatePasswordRequest request) {
+        Room room = getActiveRoom(roomKey);
+
+        accessOwnerPassword(room, request.getOwnerPassword());
+
+        if(request.getNewPassword() == null) {
+            room.setPasswordHash(null);
+        } else {
+            room.setPasswordHash(
+                    passwordEncoder.encode(request.getNewPassword())
+            );
+        }
+
+        room.setUpdatedAt(LocalDateTime.now());
+
+        roomRepository.save(room);
+    }
+
+    public void updateOwnerRoomPassword(String roomKey, UpdateOwnerPasswordRequest request) {
+        Room room = getActiveRoom(roomKey);
+
+        accessOwnerPassword(room, request.getOwnerPassword());
+
+        room.setOwnerPasswordHash(passwordEncoder.encode(request.getNewPassword()));
+        room.setUpdatedAt(LocalDateTime.now());
+
+        roomRepository.save(room);
+    }
+
+    public void updateRoomExpiration(String roomKey, UpdateExpirationRequest request) {
+        Room room = getActiveRoom(roomKey);
+
+        accessOwnerPassword(room, request.getOwnerPassword());
+
+        room.setExpiresAt(request.getExpiresAt());
+        room.setUpdatedAt(LocalDateTime.now());
+
+        roomRepository.save(room);
     }
 
     @Scheduled(fixedRate = 5 * 60 * 1000)
@@ -120,9 +153,9 @@ public class RoomService {
         }
     }
 
-    private void accessOwnerPassword(Room room, RoomAccessRequest request) {
+    private void accessOwnerPassword(Room room, String password) {
         if(!passwordEncoder.matches(
-                request.getPassword(),
+                password,
                 room.getOwnerPasswordHash()
         )) {
             throw new InvalidPasswordException();
@@ -169,7 +202,6 @@ public class RoomService {
         RoomResponse response = new RoomResponse();
         response.setRoomKey(room.getRoomKey());
         response.setName(room.getName());
-        response.setVisibility(room.getVisibility());
         response.setCreatedAt(room.getCreatedAt());
         response.setUpdatedAt(room.getUpdatedAt());
         response.setExpiresAt(room.getExpiresAt());
