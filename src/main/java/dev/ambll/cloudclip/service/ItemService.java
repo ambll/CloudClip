@@ -15,6 +15,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.MediaTypeFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -128,6 +129,7 @@ public class ItemService {
         return fileDownload;
     }
 
+    @Transactional(rollbackFor = IOException.class)
     public void deleteItem(String roomKey, Long itemId) throws IOException {
         Room room = roomService.getActiveRoom(roomKey);
 
@@ -138,11 +140,20 @@ public class ItemService {
             throw new ItemNotBelongToRoomException();
         }
 
-        if(item.getType() == ItemType.FILE) {
-            fileStorageService.delete(item.getFilePath());
-        }
-
         itemRepository.delete(item);
+
+        if(item.getType() == ItemType.FILE) {
+            try {
+                fileStorageService.delete(item.getFilePath());
+            } catch (IOException e) {
+                log.error(
+                        "Failed to clean up file after delete Item: {}",
+                        item.getFilePath(),
+                        e
+                );
+                throw e;
+            }
+        }
     }
 
     private ItemResponse toItemResponse(Item item) {
