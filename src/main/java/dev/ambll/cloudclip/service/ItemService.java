@@ -68,8 +68,23 @@ public class ItemService {
         item.setCreatedAt(LocalDateTime.now());
         item.setUpdatedAt(LocalDateTime.now());
 
-        Item savedItem = itemRepository.save(item);
+        Item savedItem;
 
+        try {
+            savedItem = itemRepository.save(item);
+        } catch(RuntimeException e) {
+            try {
+                fileStorageService.delete(filePath);
+            } catch (IOException cleanupException) {
+                e.addSuppressed(cleanupException);
+                log.error(
+                        "Failed to clean up file after Item creation failure: {}",
+                        filePath,
+                        cleanupException
+                );
+            }
+            throw e;
+        }
         ItemResponse response = toItemResponse(savedItem);
 
         return response;
