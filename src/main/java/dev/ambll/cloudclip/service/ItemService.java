@@ -16,8 +16,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.MediaTypeFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -56,6 +59,29 @@ public class ItemService {
             String roomKey,
             CreateFileItemRequest request
     ) {
+        if(request.getFile().isEmpty())  {
+            throw new FileIsEmptyException();
+        }
+
+        String originalFileName = request.getFile().getOriginalFilename();
+
+        if (originalFileName == null || originalFileName.isBlank()) {
+            throw new InvalidFileNameException();
+        }
+
+        String normalizedName = StringUtils.cleanPath(
+                originalFileName.replace('\\', '/')
+        );
+
+        String safeFileName = StringUtils.getFilename(normalizedName);
+
+        if (safeFileName == null
+                || safeFileName.isBlank()
+                || safeFileName.equals(".")
+                || safeFileName.equals("..")) {
+            throw new InvalidFileNameException();
+        }
+
         Room room = roomService.getActiveRoom(roomKey);
         
         String filePath = fileStorageService.save(request.getFile());
@@ -64,7 +90,7 @@ public class ItemService {
         item.setRoom(room);
         item.setType(ItemType.FILE);
         item.setText(null);
-        item.setFileName(request.getFile().getOriginalFilename());
+        item.setFileName(safeFileName);
         item.setFilePath(filePath);
         item.setCreatedAt(LocalDateTime.now());
         item.setUpdatedAt(LocalDateTime.now());
@@ -129,7 +155,6 @@ public class ItemService {
         return fileDownload;
     }
 
-    @Transactional(rollbackFor = IOException.class)
     public void deleteItem(String roomKey, Long itemId) throws IOException {
         Room room = roomService.getActiveRoom(roomKey);
 
@@ -140,18 +165,20 @@ public class ItemService {
             throw new ItemNotBelongToRoomException();
         }
 
+        String filePath = item.getFilePath();
+        boolean isFile = item.getType() == ItemType.FILE;
+
         itemRepository.delete(item);
 
-        if(item.getType() == ItemType.FILE) {
+        if (isFile) {
             try {
-                fileStorageService.delete(item.getFilePath());
+                fileStorageService.delete(filePath);
             } catch (IOException e) {
                 log.error(
-                        "Failed to clean up file after delete Item: {}",
-                        item.getFilePath(),
+                        "Failed to clean up file after deleting Item: {}",
+                        filePath,
                         e
                 );
-                throw e;
             }
         }
     }

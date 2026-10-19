@@ -1,5 +1,7 @@
 package dev.ambll.cloudclip.service;
 
+import dev.ambll.cloudclip.exception.FileNotSavedException;
+import dev.ambll.cloudclip.exception.StoredFileNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -26,7 +28,10 @@ public class FileStorageService {
         try {
             Files.createDirectories(this.storagePath);
         } catch (IOException e) {
-            throw new RuntimeException("Could not create storage directory", e);
+            throw new IllegalStateException(
+                    "Could not initialize file storage at: " + this.storagePath,
+                    e
+            );
         }
     }
 
@@ -36,20 +41,19 @@ public class FileStorageService {
 
             Path targetPath = storagePath.resolve(fileName);
 
-            Files.copy(
-                    file.getInputStream(),
-                    targetPath
-            );
+            try (var inputStream = file.getInputStream()) {
+                Files.copy(inputStream, targetPath);
+            }
 
             return targetPath.toString();
         } catch (IOException e) {
-            throw new RuntimeException("Could not save file", e);
+            throw new FileNotSavedException(e);
         }
     }
 
     public Resource load(String filePath) {
         if (!Files.exists(Path.of(filePath))) {
-            throw new RuntimeException("File not found");
+            throw new StoredFileNotFoundException();
         }
 
         Resource file = new FileSystemResource(Path.of(filePath));

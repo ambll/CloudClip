@@ -55,4 +55,32 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.FORBIDDEN)
                 .body(e.getMessage());
     }
+
+    @ExceptionHandler(StoredFileNotFoundException.class)
+    public ResponseEntity<String> handleStoredFileNotFound(StoredFileNotFoundException e) {
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(e.getMessage());
+    }
+
+    @ExceptionHandler(FileNotSavedException.class)
+    public ResponseEntity<String> handleFileNotSaved(FileNotSavedException e) {
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(e.getMessage());
+    }
+
+    @ExceptionHandler(FileIsEmptyException.class)
+    public ResponseEntity<String> handleFileIsEmpty(FileIsEmptyException e) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(e.getMessage());
+    }
+
+    @ExceptionHandler(InvalidFileNameException.class)
+    public ResponseEntity<String> handleInvalidFileName(InvalidFileNameException e) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(e.getMessage());
+    }
 }
