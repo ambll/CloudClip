@@ -3,6 +3,7 @@ package dev.ambll.cloudclip.service;
 import dev.ambll.cloudclip.dto.request.CreateRoomRequest;
 import dev.ambll.cloudclip.dto.request.RenameRoomRequest;
 import dev.ambll.cloudclip.dto.request.RoomAccessRequest;
+import dev.ambll.cloudclip.dto.request.UpdatePasswordRequest;
 import dev.ambll.cloudclip.dto.response.RoomResponse;
 import dev.ambll.cloudclip.entity.Item;
 import dev.ambll.cloudclip.entity.Room;
@@ -325,13 +326,13 @@ class RoomServiceTest {
         String roomName = "My room";
         String newRoomName = "New room name";
         String ownerPassword = "owner-password";
-        String passwordHash = "encoded-password";
+        String encodedOwnerPassword = "encoded-password";
         LocalDateTime updatedAt = LocalDateTime.now().minusDays(1);
 
         Room room = new Room();
         room.setName(roomName);
         room.setRoomKey(roomKey);
-        room.setOwnerPasswordHash(passwordHash);
+        room.setOwnerPasswordHash(encodedOwnerPassword);
         room.setUpdatedAt(updatedAt);
         room.setExpiresAt(LocalDateTime.now().plusDays(1));
 
@@ -341,7 +342,7 @@ class RoomServiceTest {
 
         Mockito.when(roomRepository.findByRoomKey(roomKey))
                 .thenReturn(Optional.of(room));
-        Mockito.when(passwordEncoder.matches(ownerPassword, passwordHash))
+        Mockito.when(passwordEncoder.matches(ownerPassword, encodedOwnerPassword))
                 .thenReturn(true);
 
         roomService.renameRoom(roomKey, request);
@@ -357,13 +358,13 @@ class RoomServiceTest {
         String roomName = "My room";
         String newRoomName = "New room name";
         String ownerPassword = "owner-password";
-        String passwordHash = "encoded-password";
+        String encodedOwnerPassword = "encoded-password";
         LocalDateTime updatedAt = LocalDateTime.now().minusDays(1);
 
         Room room = new Room();
         room.setName(roomName);
         room.setRoomKey(roomKey);
-        room.setOwnerPasswordHash(passwordHash);
+        room.setOwnerPasswordHash(encodedOwnerPassword);
         room.setUpdatedAt(updatedAt);
         room.setExpiresAt(LocalDateTime.now().plusDays(1));
 
@@ -373,7 +374,7 @@ class RoomServiceTest {
 
         Mockito.when(roomRepository.findByRoomKey(roomKey))
                 .thenReturn(Optional.of(room));
-        Mockito.when(passwordEncoder.matches(ownerPassword, passwordHash))
+        Mockito.when(passwordEncoder.matches(ownerPassword, encodedOwnerPassword))
                 .thenReturn(false);
 
         Assertions.assertThrows(
@@ -384,5 +385,41 @@ class RoomServiceTest {
         Mockito.verify(roomRepository, Mockito.never()).save(Mockito.any(Room.class));
         Assertions.assertNotEquals(newRoomName, room.getName());
         Assertions.assertEquals(updatedAt, room.getUpdatedAt());
+    }
+
+    /*  updateRoomPassword  */
+    @Test
+    void updateRoomPassword_success() {
+        String roomKey = "test-room-key";
+        String ownerPassword = "owner-password";
+        String encodedOwnerPassword = "encoded-password";
+        String password = "room-password";
+        String encodedPassword = "encoded-room-password";
+        String newPassword = "new-room-password";
+        String encodedNewPassword = "encoded-new-room-password";
+        LocalDateTime updatedAt = LocalDateTime.now().minusDays(1);
+
+        Room room = new Room();
+        room.setRoomKey(roomKey);
+        room.setOwnerPasswordHash(encodedOwnerPassword);
+        room.setPasswordHash(encodedPassword);
+        room.setUpdatedAt(updatedAt);
+        room.setExpiresAt(LocalDateTime.now().plusDays(1));
+
+        UpdatePasswordRequest request = new UpdatePasswordRequest();
+        request.setOwnerPassword(ownerPassword);
+        request.setNewPassword(newPassword);
+
+        Mockito.when(roomRepository.findByRoomKey(roomKey))
+                .thenReturn(Optional.of(room));
+        Mockito.when(passwordEncoder.matches(ownerPassword, encodedOwnerPassword))
+                .thenReturn(true);
+
+        roomService.updateRoomPassword(roomKey, request);
+
+        Mockito.verify(roomRepository).save(Mockito.any(Room.class));
+        Mockito.verify(passwordEncoder).encode(ownerPassword);
+        Mockito.verify(passwordEncoder).encode(newPassword);
+        Assertions.assertNotEquals(updatedAt, room.getUpdatedAt());
     }
 }
