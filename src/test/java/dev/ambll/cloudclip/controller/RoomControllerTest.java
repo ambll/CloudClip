@@ -2,6 +2,8 @@ package dev.ambll.cloudclip.controller;
 
 import dev.ambll.cloudclip.dto.request.*;
 import dev.ambll.cloudclip.dto.response.RoomResponse;
+import dev.ambll.cloudclip.exception.GlobalExceptionHandler;
+import dev.ambll.cloudclip.exception.RoomNotFoundException;
 import dev.ambll.cloudclip.service.RoomService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,7 +36,10 @@ public class RoomControllerTest {
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(roomController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(roomController)
+                .setControllerAdvice(new GlobalExceptionHandler())
+                .build();
+
         objectMapper = new ObjectMapper();
     }
 
@@ -66,25 +71,16 @@ public class RoomControllerTest {
     @Test
     void createRoom_invalidArguments() throws Exception {
         CreateRoomRequest request = new CreateRoomRequest();
-        request.setName("test-room");
-        request.setOwnerPassword("test-owner-password");
-
-        RoomResponse response = new RoomResponse();
-        response.setName("test-room");
-        response.setRoomKey("test-room-key");
-
-        Mockito.when(roomService.createRoom(Mockito.any(CreateRoomRequest.class))).thenReturn(response);
+        request.setName(null);
+        request.setOwnerPassword(null);
 
         String requestJson = objectMapper.writeValueAsString(request);
         mockMvc.perform(post("/rooms")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.name").value("test-room"))
-                .andExpect(jsonPath("$.roomKey").value("test-room-key"));
+                .andExpect(status().isBadRequest());
 
-        Mockito.verify(roomService).createRoom(Mockito.any(CreateRoomRequest.class));
+        Mockito.verify(roomService, Mockito.never()).createRoom(Mockito.any(CreateRoomRequest.class));
     }
 
     /*  getRoomByKey  */
@@ -104,6 +100,19 @@ public class RoomControllerTest {
                 .andExpect(jsonPath("$.roomKey").value("test-room-key"));
 
         Mockito.verify(roomService).getRoom(Mockito.eq(testRoomKey));
+    }
+
+    @Test
+    void getRoomByKey_throwRoomNotFoundException() throws Exception {
+        String testRoomKey = "test-room-key";
+
+        Mockito.when(roomService.getRoom(testRoomKey))
+                .thenThrow(RoomNotFoundException.class);
+
+        mockMvc.perform(get("/rooms/{roomKey}", testRoomKey))
+                .andExpect(status().isNotFound());
+
+        Mockito.verify(roomService).getRoom(testRoomKey);
     }
 
     /*  deleteRoom  */
@@ -220,5 +229,43 @@ public class RoomControllerTest {
                 Mockito.eq(testRoomKey),
                 Mockito.any(RoomAccessRequest.class)
         );
+    }
+
+    @Test
+    void accessRoom_roomNotFound() throws Exception {
+        String testRoomKey = "unknown-room";
+
+        RoomAccessRequest request = new RoomAccessRequest();
+        request.setPassword("room-password");
+
+        Mockito.doThrow(RoomNotFoundException.class)
+                .when(roomService)
+                .accessRoom(Mockito.eq(testRoomKey), Mockito.any(RoomAccessRequest.class));
+
+        mockMvc.perform(post("/rooms/{roomKey}/access", testRoomKey)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isNotFound())
+                .andExpect(request().sessionAttributeDoesNotExist("room:" + testRoomKey));
+
+        Mockito.verify(roomService).accessRoom(
+                Mockito.eq(testRoomKey),
+                Mockito.any(RoomAccessRequest.class)
+        );
+    }
+
+    @Test
+    void accessRoom_invalidArguments() throws Exception {
+        String testRoomKey = "test-room-key";
+
+        RoomAccessRequest request = new RoomAccessRequest();
+        request.setPassword(null);
+
+        mockMvc.perform(post("/rooms/{roomKey}/access", testRoomKey)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+
+        Mockito.verifyNoInteractions(roomService);
     }
 }
