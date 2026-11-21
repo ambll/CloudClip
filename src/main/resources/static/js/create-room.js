@@ -1,3 +1,35 @@
+function getCsrfToken() {
+    const cookie = document.cookie
+        .split("; ")
+        .find(row => row.startsWith("XSRF-TOKEN="));
+
+    return cookie
+        ? decodeURIComponent(cookie.substring("XSRF-TOKEN=".length))
+        : null;
+}
+
+async function apiFetch(url, options = {}) {
+    const method = (options.method || "GET").toUpperCase();
+
+    const headers = new Headers(options.headers || {});
+
+    if (!["GET", "HEAD", "OPTIONS", "TRACE"].includes(method)) {
+        const csrfToken = getCsrfToken();
+
+        if (!csrfToken) {
+            throw new Error("CSRF token not found");
+        }
+
+        headers.set("X-XSRF-TOKEN", csrfToken);
+    }
+
+    return fetch(url, {
+        ...options,
+        headers
+    });
+}
+
+
 const form = document.getElementById("createRoomForm");
 
 form.addEventListener("submit", async function (event) {
@@ -21,7 +53,7 @@ form.addEventListener("submit", async function (event) {
     };
 
     try {
-        const response = await fetch("/rooms", {
+        const response = await apiFetch("/rooms", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

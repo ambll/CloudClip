@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -192,10 +193,29 @@ public class RoomService {
         return room;
     }
 
+    private static final String ROOM_KEY_CHARS =
+            "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
+
+    private static final int ROOM_KEY_LENGTH = 8;
+
+    private static final SecureRandom RANDOM = new SecureRandom();
+
     private String generateRoomKey() {
-        return UUID.randomUUID()
-                .toString()
-                .replace("-", "");
+        String key;
+
+        do {
+            StringBuilder builder = new StringBuilder(ROOM_KEY_LENGTH);
+
+            for (int i = 0; i < ROOM_KEY_LENGTH; i++) {
+                int index = RANDOM.nextInt(ROOM_KEY_CHARS.length());
+                builder.append(ROOM_KEY_CHARS.charAt(index));
+            }
+
+            key = builder.toString();
+
+        } while (roomRepository.existsByRoomKey(key));
+
+        return key.toString();
     }
 
     private RoomResponse toRoomResponse(Room room) {

@@ -1,16 +1,17 @@
 spring:
   application:
     name: cloudclip
+
   datasource:
-    url: jdbc:postgresql://localhost:5432/cloudclip
-    username: cloudclip
-    password: erfjui
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/cloudclip}
+    username: ${DB_USERNAME:cloudclip}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
       ddl-auto: validate
-    show-sql: true
+    show-sql: false
 
   flyway:
     enabled: true
@@ -21,4 +22,4 @@ spring:
       max-request-size: 11MB
 
 file-storage:
-  path: ./storage/files
+  path: ${FILE_STORAGE_PATH:./storage/files}

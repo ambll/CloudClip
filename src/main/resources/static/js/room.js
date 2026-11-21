@@ -2,6 +2,38 @@ const params = new URLSearchParams(window.location.search);
 
 const roomKey = params.get("roomKey");
 
+function getCsrfToken() {
+    const cookie = document.cookie
+        .split("; ")
+        .find(row => row.startsWith("XSRF-TOKEN="));
+
+    return cookie
+        ? decodeURIComponent(cookie.substring("XSRF-TOKEN=".length))
+        : null;
+}
+
+async function apiFetch(url, options = {}) {
+    const method = (options.method || "GET").toUpperCase();
+
+    const headers = new Headers(options.headers || {});
+
+    if (!["GET", "HEAD", "OPTIONS", "TRACE"].includes(method)) {
+        const csrfToken = getCsrfToken();
+
+        if (!csrfToken) {
+            throw new Error("CSRF token not found");
+        }
+
+        headers.set("X-XSRF-TOKEN", csrfToken);
+    }
+
+    return fetch(url, {
+        ...options,
+        headers
+    });
+}
+
+
 let currentRoom = null;
 
 
@@ -91,7 +123,7 @@ function hidePasswordError() {
 async function loadRoom() {
 
     const response =
-        await fetch(`/rooms/${roomKey}`);
+        await apiFetch(`/rooms/${roomKey}`);
 
     if (!response.ok) {
 
@@ -284,7 +316,7 @@ function updateRoomMenu(room) {
 async function loadItems() {
 
     const response =
-        await fetch(`/rooms/${roomKey}/items`);
+        await apiFetch(`/rooms/${roomKey}/items`);
 
 
     if (response.status === 403) {
@@ -380,7 +412,7 @@ async function loadItems() {
             async function () {
 
                 const response =
-                    await fetch(
+                    await apiFetch(
                         `/rooms/${roomKey}/items/${item.id}`,
                         {
                             method: "DELETE"
@@ -446,7 +478,7 @@ passwordForm.addEventListener(
 
 
         const response =
-            await fetch(
+            await apiFetch(
                 `/rooms/${roomKey}/access`,
                 {
                     method: "POST",
@@ -522,7 +554,7 @@ addTextButton.addEventListener(
 
 
         const response =
-            await fetch(
+            await apiFetch(
                 `/rooms/${roomKey}/items/text`,
                 {
                     method: "POST",
@@ -603,7 +635,7 @@ addFileButton.addEventListener(
 
 
         const response =
-            await fetch(
+            await apiFetch(
                 `/rooms/${roomKey}/items/file`,
                 {
                     method: "POST",
@@ -784,7 +816,7 @@ renameRoomForm.addEventListener(
 
 
         const response =
-            await fetch(
+            await apiFetch(
                 `/rooms/${roomKey}/name`,
                 {
                     method: "PATCH",
@@ -1019,7 +1051,7 @@ roomPasswordForm.addEventListener(
 
 
         const response =
-            await fetch(
+            await apiFetch(
                 `/rooms/${roomKey}/password`,
                 {
                     method: "PATCH",
@@ -1177,7 +1209,7 @@ removeRoomPasswordForm.addEventListener(
 
 
         const response =
-            await fetch(
+            await apiFetch(
                 `/rooms/${roomKey}/password`,
                 {
                     method: "PATCH",
@@ -1364,7 +1396,7 @@ ownerPasswordForm.addEventListener(
 
 
         const response =
-            await fetch(
+            await apiFetch(
                 `/rooms/${roomKey}/owner-password`,
                 {
                     method: "PATCH",
@@ -1639,7 +1671,7 @@ expirationForm.addEventListener(
 
 
         const response =
-            await fetch(
+            await apiFetch(
                 `/rooms/${roomKey}/expiration`,
                 {
                     method: "PATCH",
@@ -1744,7 +1776,7 @@ async function removeExpiration() {
 
 
     const response =
-        await fetch(
+        await apiFetch(
             `/rooms/${roomKey}/expiration`,
             {
                 method: "PATCH",
@@ -1920,7 +1952,7 @@ deleteRoomForm.addEventListener(
 
 
         const response =
-            await fetch(
+            await apiFetch(
                 `/rooms/${roomKey}`,
                 {
                     method: "DELETE",
